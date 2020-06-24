@@ -812,11 +812,16 @@ function Map:update(dt)
 end
 
 --- Draw every Layer
--- @param tx Translate on X
+-- @param tx Translate on X or Transform object
 -- @param ty Translate on Y
 -- @param sx Scale on X
 -- @param sy Scale on Y
-function Map:draw(tx, ty, sx, sy)
+function Map:draw(tx_or_transform, ty, sx, sy)
+  if type(tx_or_transform) == 'userdata' and tx_or_transform.getMatrix then
+    local m = {tx_or_transform:getMatrix()}
+    tx_or_transform, ty, sx, sy = m[4]/m[1], m[8]/m[6], m[1], m[6]
+  end
+  
 	local current_canvas = lg.getCanvas()
 	lg.setCanvas(self.canvas)
 	lg.clear()
@@ -825,7 +830,7 @@ function Map:draw(tx, ty, sx, sy)
 	-- Map is translated to correct position so the right section is drawn
 	lg.push()
 	lg.origin()
-	lg.translate(math.floor(tx or 0), math.floor(ty or 0))
+	lg.translate(math.floor(tx_or_transform or 0), math.floor(ty or 0))
 
 	for _, layer in ipairs(self.layers) do
 		if layer.visible and layer.opacity > 0 then
@@ -1137,7 +1142,7 @@ function Map:setLayerTile(layer, x, y, gid)
 	if instance then
 		self:swapTile(instance, tile)
 	else
-		self:addNewLayerTile(layer, tile, x, y)
+		self:addNewLayerTile(layer, nil, tile, x, y)
 	end
 	layer.data[y][x] = tile
 end
