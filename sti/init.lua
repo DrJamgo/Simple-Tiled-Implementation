@@ -232,6 +232,9 @@ function Map:setTiles(index, tileset, gid)
 			}
 
 			self.tiles[gid] = tile
+      if tile.type ~= "" and tile.type ~= nil then
+        self.tiles[tile.type] = tile
+      end
 			gid             = gid + 1
 		end
 	end
