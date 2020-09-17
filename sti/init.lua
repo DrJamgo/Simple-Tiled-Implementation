@@ -707,12 +707,12 @@ function Map:convertToCustomLayer(index)
 	local layer = assert(self.layers[index], "Layer not found: " .. index)
 
 	layer.type     = "customlayer"
-	layer.x        = nil
-	layer.y        = nil
-	layer.width    = nil
-	layer.height   = nil
+--	layer.x        = nil
+--	layer.y        = nil
+--	layer.width    = nil
+--	layer.height   = nil
 	layer.encoding = nil
-	layer.data     = nil
+--	layer.data     = nil
 	layer.chunks   = nil
 	layer.objects  = nil
 	layer.image    = nil
