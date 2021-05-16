@@ -503,6 +503,9 @@ function Map:set_batches(layer, chunk)
 	end
 
 	if self.orientation == "orthogonal" or self.orientation == "isometric" then
+		local offsetX = chunk and chunk.x or 0
+		local offsetY = chunk and chunk.y or 0
+
 		local startX     = 1
 		local startY     = 1
 		local endX       = chunk and chunk.width  or layer.width
@@ -532,7 +535,7 @@ function Map:set_batches(layer, chunk)
 				end
 
 				if tile then
-					self:addNewLayerTile(layer, chunk, tile, x, y)
+					self:addNewLayerTile(layer, chunk, tile, x + offsetX, y + offsetY)
 				end
 			end
 		end
@@ -874,7 +877,7 @@ function Map:drawTileLayer(layer)
 	if layer.chunks then
 		for _, chunk in ipairs(layer.chunks) do
 			for _, batch in pairs(chunk.batches) do
-				lg.draw(batch, floor(chunk.x * self.tilewidth), floor(chunk.y * self.tileheight))
+				lg.draw(batch, 0, 0)
 			end
 		end
 
@@ -938,16 +941,18 @@ function Map:drawObjectLayer(layer)
 	end
 
 	for _, object in ipairs(layer.objects) do
-		if object.shape == "rectangle" and not object.gid then
-			drawShape(object.rectangle, "rectangle")
-		elseif object.shape == "ellipse" then
-			drawShape(object.ellipse, "ellipse")
-		elseif object.shape == "polygon" then
-			drawShape(object.polygon, "polygon")
-		elseif object.shape == "polyline" then
-			drawShape(object.polyline, "polyline")
-		elseif object.shape == "point" then
-			lg.points(object.x, object.y)
+		if object.visible then
+			if object.shape == "rectangle" and not object.gid then
+				drawShape(object.rectangle, "rectangle")
+			elseif object.shape == "ellipse" then
+				drawShape(object.ellipse, "ellipse")
+			elseif object.shape == "polygon" then
+				drawShape(object.polygon, "polygon")
+			elseif object.shape == "polyline" then
+				drawShape(object.polyline, "polyline")
+			elseif object.shape == "point" then
+				lg.points(object.x, object.y)
+			end
 		end
 	end
 
