@@ -819,7 +819,8 @@ end
 -- @param ty Translate on Y
 -- @param sx Scale on X
 -- @param sy Scale on Y
-function Map:draw(tx_or_transform, ty, sx, sy)
+-- @param filterFunc function to filter layer drawing, prototype: myfunc(layer)
+function Map:draw(tx_or_transform, ty, sx, sy, filterFunc)
   if type(tx_or_transform) == 'userdata' and tx_or_transform.getMatrix then
     local m = {tx_or_transform:getMatrix()}
     tx_or_transform, ty, sx, sy = m[4]/m[1], m[8]/m[6], m[1], m[6]
@@ -836,7 +837,11 @@ function Map:draw(tx_or_transform, ty, sx, sy)
 	lg.translate(math.floor(tx_or_transform or 0), math.floor(ty or 0))
 
 	for _, layer in ipairs(self.layers) do
-		if layer.visible and layer.opacity > 0 then
+    local doDraw = layer.visible and layer.opacity > 0
+    if doDraw and filterFunc then
+      doDraw = filterFunc(layer)
+    end
+		if doDraw then
 			self:drawLayer(layer)
 		end
 	end
